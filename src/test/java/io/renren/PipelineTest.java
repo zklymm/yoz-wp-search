@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class PipelineTest implements Pipeline {
-    private List<SysRegionEntity> list = new ArrayList<>();
     @Override
     public void process(ResultItems resultItems, Task task) {
-        SysRegionEntity entity = new SysRegionEntity();
         System.out.println("get page: " + resultItems.getRequest().getUrl());
         for (Map.Entry<String, Object> entry : resultItems.getAll().entrySet()) {
             System.out.println(entry.getKey() + ":\t" + entry.getValue());

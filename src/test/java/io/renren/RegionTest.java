@@ -18,6 +18,10 @@ public class RegionTest {
     //设置utf-8发现有部分字符有乱码
     public static final String CHARSET = "GBK";
 
+    public static final String[] strs = new String[]{
+            "CITYTR","COUNTYTR","TOWNTR","VILLAGETR"
+    };
+
     /**
      * 读省的信息
      * @param args
@@ -42,7 +46,48 @@ public class RegionTest {
 
                 System.out.println("省级爬取:"+code+ "      "+name);
 
-                readShi(a);
+                read(a,code,1);
+            }
+        }
+    }
+
+    public static void read(String url,String pid,int n) throws Exception {
+        String content = getContent(baseUrl+url).toUpperCase();
+        String[] citys = content.split(strs[n-1]);
+        if(n == 5){
+            for(int i=1; i<citys.length; i++){
+                String[] strs = citys[i].split("<TD>");
+                String str1 = strs[1].substring(0, strs[1].indexOf("</TD>"));
+                String str2 = strs[2].substring(0, strs[2].indexOf("</TD>"));
+                String str3 = strs[3].substring(0, strs[3].indexOf("</TD>"));
+                System.out.println("村级爬取:"+str1 +"   "+ str2 +"   "+ str3);
+            }
+            return;
+        }else{
+            for(int i=1; i<citys.length; i++){
+                String[] strs = citys[i].split("<A HREF='");
+                String cityUrl = null;
+                String cityCode = null;
+                if(citys[i].indexOf("<A HREF='")==-1){
+                    cityCode = citys[i].substring(6, 18);
+                    String cityName = citys[i].substring(citys[i].indexOf("</TD><TD>")+9,citys[i].lastIndexOf("</TD>"));
+                    System.out.println(cityCode +"     "+cityName);
+
+                }else {
+                    for (int si = 1; si < 3; si++) {
+                        if (si == 1) {//取链接和编码
+                            cityUrl = strs[si].substring(0, strs[si].indexOf("'>"));
+                            cityCode = strs[si].substring(strs[si].indexOf("'>") + 2, strs[si].indexOf("</A>"));
+
+                        } else {
+
+                            System.out.println("市级爬取:" + cityCode + "   " + strs[si].substring(strs[si].indexOf("'>") + 2, strs[si].indexOf("</A>")));
+                        }
+                    }
+                }
+                if(null!=cityUrl) {
+                    read(cityUrl, cityCode, n++);
+                }
             }
         }
     }

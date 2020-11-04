@@ -1,9 +1,11 @@
 package io.renren.modules.region.service.impl;
 
-import io.renren.modules.region.utils.RegionUtils;
+
+import io.renren.modules.region.utils.GovRegionSpiderPipeline;
+import io.renren.modules.region.utils.GovRegionSpiderUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,10 +16,16 @@ import io.renren.common.utils.Query;
 import io.renren.modules.region.dao.SysRegionDao;
 import io.renren.modules.region.entity.SysRegionEntity;
 import io.renren.modules.region.service.SysRegionService;
+import us.codecraft.webmagic.Spider;
 
 
 @Service("sysRegionService")
 public class SysRegionServiceImpl extends ServiceImpl<SysRegionDao, SysRegionEntity> implements SysRegionService {
+
+    @Autowired
+    private GovRegionSpiderUtils govRegionSpiderUtils;
+    @Autowired
+    private GovRegionSpiderPipeline govRegionSpiderPipeline;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -31,8 +39,16 @@ public class SysRegionServiceImpl extends ServiceImpl<SysRegionDao, SysRegionEnt
 
     @Override
     public void updateRegion() {
-        List<SysRegionEntity> list = RegionUtils.readSheng();
-        System.out.println(list.toString());
+        Spider.create(govRegionSpiderUtils)
+                //从"https://github.com/code4craft"开始抓
+                .addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/")
+//                .addUrl("https://github.com/code4craft")
+                //.addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/45/09/450981.html")
+                .addPipeline(govRegionSpiderPipeline)
+                //开启5个线程抓取
+                .thread(5)
+                //启动爬虫
+                .run();
     }
 
 }

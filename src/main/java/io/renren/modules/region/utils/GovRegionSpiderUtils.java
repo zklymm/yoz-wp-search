@@ -1,18 +1,17 @@
-package io.renren;
+package io.renren.modules.region.utils;
 
 import io.renren.modules.region.entity.SysRegionEntity;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.pipeline.JsonFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.processor.example.GithubRepoPageProcessor;
-import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpiderTest implements PageProcessor {
+@Component
+public class GovRegionSpiderUtils implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
 
@@ -81,7 +80,7 @@ public class SpiderTest implements PageProcessor {
                 list.add(entity);
             }
         }else if(villageNameList.size()>0 && villageTypeList.size()>0 && villageCodeList.size()>0){
-            if(villageNameList.size() != villageTypeList.size() || villageTypeList != villageCodeList){
+            if(villageNameList.size() != villageTypeList.size() || villageTypeList.size() != villageCodeList.size()){
                 return;
             }
             for(int i=0;i<cityNameList.size();i++){
@@ -104,21 +103,21 @@ public class SpiderTest implements PageProcessor {
 
     @Override
     public Site getSite() {
-        return site.setCharset("gbk").setRetryTimes(3).setSleepTime(1000).setTimeOut(10000);
+        return site.setCharset("gbk").setRetryTimes(3).setSleepTime(3000).setTimeOut(10000)
+                .setUserAgent("\"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36\"");
     }
 
-    public static void main(String[] args) {
-
-        Spider.create(new SpiderTest())
-                //从"https://github.com/code4craft"开始抓
-                .addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/")
-//                .addUrl("https://github.com/code4craft")
-                //.addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/45/09/450981.html")
-                .addPipeline(new PipelineTest())
-                //开启5个线程抓取
-                .thread(5)
-                //启动爬虫
-                .run();
-    }
-
+//    public static void start() {
+//
+//        Spider.create(new GovRegionSpiderUtils())
+//                //从"https://github.com/code4craft"开始抓
+//                .addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/")
+////                .addUrl("https://github.com/code4craft")
+//                //.addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/45/09/450981.html")
+//                .addPipeline(new GovRegionSpiderPipeline())
+//                //开启5个线程抓取
+//                .thread(5)
+//                //启动爬虫
+//                .run();
+//    }
 }
