@@ -83,7 +83,7 @@ public class GovRegionSpiderUtils implements PageProcessor {
             if(villageNameList.size() != villageTypeList.size() || villageTypeList.size() != villageCodeList.size()){
                 return;
             }
-            for(int i=0;i<cityNameList.size();i++){
+            for(int i=0;i<villageNameList.size();i++){
                 SysRegionEntity entity = new SysRegionEntity();
                 entity.setRegionId(villageCodeList.get(i));
                 entity.setRegionName(villageNameList.get(i));

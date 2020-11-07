@@ -1,8 +1,6 @@
 package io.renren.modules.region.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,7 +21,7 @@ public class SysRegionEntity implements Serializable {
 	/**
 	 * 
 	 */
-	@TableId(type = IdType.AUTO)
+	@TableId
 	private Long id;
 	/**
 	 * 行政区编号
@@ -48,6 +46,7 @@ public class SysRegionEntity implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@TableField(fill = FieldFill.INSERT)
 	private Long creator;
 	/**
 	 * 创建时间
