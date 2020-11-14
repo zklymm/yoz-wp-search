@@ -10,6 +10,9 @@ import us.codecraft.webmagic.pipeline.Pipeline;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author zk
+ */
 @Component
 public class GovRegionSpiderPipeline implements Pipeline {
     @Autowired
