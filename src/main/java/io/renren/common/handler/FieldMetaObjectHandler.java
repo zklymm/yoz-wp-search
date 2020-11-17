@@ -9,6 +9,7 @@
 package io.renren.common.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import io.renren.common.user.SecurityUser;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +32,13 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName(CREATE_DATE,new Date(),metaObject);
         this.setFieldValByName(UPDATE_DATE,new Date(),metaObject);
+        this.setFieldValByName(CREATOR, SecurityUser.getUserId(),metaObject);
+        this.setFieldValByName(UPDATER, SecurityUser.getUserId(),metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         this.setFieldValByName(UPDATE_DATE,new Date(),metaObject);
+        this.setFieldValByName(UPDATER, SecurityUser.getUserId(),metaObject);
     }
 }
