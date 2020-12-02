@@ -26,7 +26,7 @@ public class SysRegionEntity implements Serializable {
 	/**
 	 * 行政区编号
 	 */
-	private String regionId;
+	private String regionCode;
 	/**
 	 * 行政区名称
 	 */
@@ -40,24 +40,38 @@ public class SysRegionEntity implements Serializable {
 	 */
 	private String countyType;
 	/**
-	 * 上级id
+	 * 上级code
 	 */
-	private String pid;
+	private String parentCode;
 	/**
-	 * 创建者
+	 * 全部上级
 	 */
-	@TableField(fill = FieldFill.INSERT)
-	private Long creator;
+	private String parentPath;
+	/**
+	 * 省级名称
+	 */
+	private String proviceName;
+	/**
+	 * 市级名称
+	 */
+	private String cityName;
+	/**
+	 * 区县级名称
+	 */
+	private String countyName;
+	/**
+	 * 乡镇级名称
+	 */
+	private String townName;
+	/**
+	 * 村级名称
+	 */
+	private String villageName;
 	/**
 	 * 创建时间
 	 */
 	@TableField(fill = FieldFill.INSERT)
 	private Date createDate;
-	/**
-	 * 更新者
-	 */
-	@TableField(fill = FieldFill.INSERT_UPDATE)
-	private Long updater;
 	/**
 	 * 更新时间
 	 */

@@ -32,8 +32,8 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName(CREATE_DATE,new Date(),metaObject);
         this.setFieldValByName(UPDATE_DATE,new Date(),metaObject);
-        this.setFieldValByName(CREATOR, SecurityUser.getUserId(),metaObject);
-        this.setFieldValByName(UPDATER, SecurityUser.getUserId(),metaObject);
+//        this.setFieldValByName(CREATOR, SecurityUser.getUserId(),metaObject);
+//        this.setFieldValByName(UPDATER, SecurityUser.getUserId(),metaObject);
     }
 
     @Override

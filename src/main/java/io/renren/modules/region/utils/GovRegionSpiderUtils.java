@@ -1,6 +1,11 @@
 package io.renren.modules.region.utils;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.renren.modules.region.entity.SysRegionEntity;
+import io.renren.modules.region.service.SysRegionService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -13,8 +18,10 @@ import java.util.List;
 @Component
 public class GovRegionSpiderUtils implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
-
+    private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000);
+    @Autowired
+    @Lazy
+    private SysRegionService sysRegionService;
     @Override
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑
     public void process(Page page) {
@@ -38,9 +45,10 @@ public class GovRegionSpiderUtils implements PageProcessor {
             }
             for(int i=0;i<provNameList.size();i++){
                 SysRegionEntity entity = new SysRegionEntity();
-                entity.setRegionId(provCodeList.get(i).substring(0,provCodeList.get(i).indexOf("."))+"0000000000");
+                entity.setRegionCode(provCodeList.get(i).substring(0,provCodeList.get(i).indexOf("."))+"0000000000");
                 entity.setRegionName(provNameList.get(i));
                 entity.setRegionType(1);
+                entity.setProviceName(provNameList.get(i));
                 list.add(entity);
             }
         }else if(cityNameList.size()>0 && cityCodeList.size()>0){
@@ -48,11 +56,15 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 return;
             }
             for(int i=0;i<cityNameList.size();i++){
+                String proviceCode = cityCodeList.get(i).substring(0,2)+"0000000000";
                 SysRegionEntity entity = new SysRegionEntity();
-                entity.setRegionId(cityCodeList.get(i));
+                entity.setRegionCode(cityCodeList.get(i));
                 entity.setRegionName(cityNameList.get(i));
-                entity.setPid(cityCodeList.get(i).substring(0,2)+"0000000000");
+                entity.setParentCode(proviceCode);
                 entity.setRegionType(2);
+                entity.setProviceName(getName(proviceCode));
+                entity.setCityName(cityNameList.get(i));
+                entity.setParentPath(proviceCode);
                 list.add(entity);
             }
         }else if(countyNameList.size()>0 && countyCodeList.size()>0){
@@ -60,11 +72,17 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 return;
             }
             for(int i=0;i<countyNameList.size();i++){
+                String proviceCode = countyCodeList.get(i).substring(0,2)+"0000000000";
+                String cityCode = countyCodeList.get(i).substring(0,4)+"00000000";
                 SysRegionEntity entity = new SysRegionEntity();
-                entity.setRegionId(countyCodeList.get(i));
+                entity.setRegionCode(countyCodeList.get(i));
                 entity.setRegionName(countyNameList.get(i));
                 entity.setRegionType(3);
-                entity.setPid(countyCodeList.get(i).substring(0,4)+"00000000");
+                entity.setParentCode(cityCode);
+                entity.setProviceName(getName(proviceCode));
+                entity.setCityName(getName(cityCode));
+                entity.setCountyName(countyNameList.get(i));
+                entity.setParentPath(proviceCode+","+cityCode);
                 list.add(entity);
             }
         }else if(townNameList.size()>0 && townCodeList.size()>0){
@@ -72,11 +90,19 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 return;
             }
             for(int i=0;i<townNameList.size();i++){
+                String proviceCode = townCodeList.get(i).substring(0,2)+"0000000000";
+                String cityCode = townCodeList.get(i).substring(0,4)+"00000000";
+                String countyCode = townCodeList.get(i).substring(0,6)+"000000";
                 SysRegionEntity entity = new SysRegionEntity();
-                entity.setRegionId(townCodeList.get(i));
+                entity.setRegionCode(townCodeList.get(i));
                 entity.setRegionName(townNameList.get(i));
                 entity.setRegionType(4);
-                entity.setPid(townCodeList.get(i).substring(0,6)+"000000");
+                entity.setParentCode(countyCode);
+                entity.setProviceName(getName(proviceCode));
+                entity.setCityName(getName(cityCode));
+                entity.setCountyName(getName(countyCode));
+                entity.setTownName(townNameList.get(i));
+                entity.setParentPath(proviceCode+","+cityCode+","+countyCode);
                 list.add(entity);
             }
         }else if(villageNameList.size()>0 && villageTypeList.size()>0 && villageCodeList.size()>0){
@@ -84,12 +110,22 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 return;
             }
             for(int i=0;i<villageNameList.size();i++){
+                String proviceCode = villageCodeList.get(i).substring(0,2)+"0000000000";
+                String cityCode = villageCodeList.get(i).substring(0,4)+"00000000";
+                String countyCode = villageCodeList.get(i).substring(0,6)+"000000";
+                String townCode = villageCodeList.get(i).substring(0,9)+"000";
                 SysRegionEntity entity = new SysRegionEntity();
-                entity.setRegionId(villageCodeList.get(i));
+                entity.setRegionCode(villageCodeList.get(i));
                 entity.setRegionName(villageNameList.get(i));
                 entity.setCountyType(villageTypeList.get(i));
                 entity.setRegionType(5);
-                entity.setPid(villageCodeList.get(i).substring(0,9)+"000");
+                entity.setParentCode(townCode);
+                entity.setProviceName(getName(proviceCode));
+                entity.setCityName(getName(cityCode));
+                entity.setCountyName(getName(countyCode));
+                entity.setTownName(getName(townCode));
+                entity.setVillageName(villageNameList.get(i));
+                entity.setParentPath(proviceCode+","+cityCode+","+countyCode+","+townCode);
                 list.add(entity);
             }
         }
@@ -101,10 +137,19 @@ public class GovRegionSpiderUtils implements PageProcessor {
         page.addTargetRequests(page.getHtml().xpath("//tr[@class='provincetr']/td/a/@href|//tr[@class='citytr']/td[1]/a/@href|//tr[@class='countytr']/td[1]/a/@href|//tr[@class='towntr']/td[1]/a/@href").all());
     }
 
+    private String getName(String regionCode){
+        QueryWrapper<SysRegionEntity> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(StringUtils.isNotBlank(regionCode),SysRegionEntity::getRegionCode,regionCode);
+        wrapper.lambda().select(SysRegionEntity::getRegionName);
+        SysRegionEntity entity = sysRegionService.getOne(wrapper);
+
+        return entity.getRegionName();
+    }
+
     @Override
     public Site getSite() {
-        return site.setCharset("gbk").setRetryTimes(3).setSleepTime(3000).setTimeOut(10000)
-                .setUserAgent("\"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36\"");
+
+        return site.setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000);
     }
 
 //    public static void start() {
