@@ -68,6 +68,14 @@ public class SysRegionEntity implements Serializable {
 	 */
 	private String villageName;
 	/**
+	 * 经度
+	 */
+	private String longitude;
+	/**
+	 * 纬度
+	 */
+	private String latitude;
+	/**
 	 * 创建时间
 	 */
 	@TableField(fill = FieldFill.INSERT)

@@ -250,6 +250,11 @@
 			<artifactId>webmagic-extension</artifactId>
 			<version>0.7.4</version>
 		</dependency>
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>5.5.1</version>
+		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>org.freemarker</groupId>-->
 <!--			<artifactId>freemarker</artifactId>-->

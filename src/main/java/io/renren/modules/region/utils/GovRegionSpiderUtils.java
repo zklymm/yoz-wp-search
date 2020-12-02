@@ -1,5 +1,9 @@
 package io.renren.modules.region.utils;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.renren.modules.region.entity.SysRegionEntity;
 import io.renren.modules.region.service.SysRegionService;
@@ -12,16 +16,17 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class GovRegionSpiderUtils implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000);
     @Autowired
-    @Lazy
     private SysRegionService sysRegionService;
+
+    private String gaoUrl = "https://restapi.amap.com/v3/geocode/geo";
+    private String gaoKey = "4138c1cea719cc344b6c876825079684";
     @Override
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑
     public void process(Page page) {
@@ -49,6 +54,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setRegionName(provNameList.get(i));
                 entity.setRegionType(1);
                 entity.setProviceName(provNameList.get(i));
+                String[] itude = getItude(provNameList.get(i));
+                entity.setLongitude(itude[0]);
+                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(cityNameList.size()>0 && cityCodeList.size()>0){
@@ -65,6 +73,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setProviceName(getName(proviceCode));
                 entity.setCityName(cityNameList.get(i));
                 entity.setParentPath(proviceCode);
+                String[] itude = getItude(getName(proviceCode)+cityNameList.get(i));
+                entity.setLongitude(itude[0]);
+                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(countyNameList.size()>0 && countyCodeList.size()>0){
@@ -83,6 +94,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setCityName(getName(cityCode));
                 entity.setCountyName(countyNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode);
+                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+countyNameList.get(i));
+                entity.setLongitude(itude[0]);
+                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(townNameList.size()>0 && townCodeList.size()>0){
@@ -103,6 +117,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setCountyName(getName(countyCode));
                 entity.setTownName(townNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode);
+                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+townNameList.get(i));
+                entity.setLongitude(itude[0]);
+                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(villageNameList.size()>0 && villageTypeList.size()>0 && villageCodeList.size()>0){
@@ -126,6 +143,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setTownName(getName(townCode));
                 entity.setVillageName(villageNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode+","+townCode);
+                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+getName(townCode)+villageNameList.get(i));
+                entity.setLongitude(itude[0]);
+                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }
@@ -144,6 +164,21 @@ public class GovRegionSpiderUtils implements PageProcessor {
         SysRegionEntity entity = sysRegionService.getOne(wrapper);
 
         return entity.getRegionName();
+    }
+
+    private String[] getItude(String address){
+        Map<String,Object> param = new HashMap<>();
+        param.put("address",address);
+        param.put("key",gaoKey);
+        String result = HttpUtil.get(gaoUrl, param);
+        JSONObject jsonObject = JSONUtil.parseObj(result);
+        JSONArray geocodes = (JSONArray)jsonObject.get("geocodes");
+        Iterator<Object> iterator = geocodes.stream().iterator();
+        Map map = (Map) iterator.next();
+        String[] str = map.get("location").toString().split(",");
+        System.out.println(str[1]);
+        return str;
+
     }
 
     @Override
