@@ -21,7 +21,7 @@ import java.util.*;
 @Component
 public class GovRegionSpiderUtils implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
-    private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000);
+    private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000).setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50");
     @Autowired
     private SysRegionService sysRegionService;
 
@@ -36,8 +36,10 @@ public class GovRegionSpiderUtils implements PageProcessor {
         List<String> provCodeList = page.getHtml().xpath("//tr[@class='provincetr']/td/a/@href").all();
         List<String> cityNameList = page.getHtml().xpath("//tr[@class='citytr']/td[2]/a/text()").all();
         List<String> cityCodeList = page.getHtml().xpath("//tr[@class='citytr']/td[1]/a/text()").all();
-        List<String> countyNameList = page.getHtml().xpath("//tr[@class='countytr']/td[2]/a/text()").all();
-        List<String> countyCodeList = page.getHtml().xpath("//tr[@class='countytr']/td[1]/a/text()").all();
+        List<String> countyNameList = page.getHtml().xpath("//tr[@class='countytr']/td[2]/a/text()|//tr[@class='countytr']/td[2]/text()").all();
+        countyNameList.removeAll(Collections.singleton(""));
+        List<String> countyCodeList = page.getHtml().xpath("//tr[@class='countytr']/td[1]/a/text()|//tr[@class='countytr']/td[1]/text()").all();
+        countyCodeList.removeAll(Collections.singleton(""));
         List<String> townNameList = page.getHtml().xpath("//tr[@class='towntr']/td[2]/a/text()").all();
         List<String> townCodeList = page.getHtml().xpath("//tr[@class='towntr']/td[1]/a/text()").all();
         List<String> villageNameList = page.getHtml().xpath("//tr[@class='villagetr']/td[3]/text()").all();

@@ -47,7 +47,7 @@ public class SysRegionServiceImpl extends ServiceImpl<SysRegionDao, SysRegionEnt
     public void updateRegion() {
         Spider spider = Spider.create(govRegionSpiderUtils)
                 //从"https://github.com/code4craft"开始抓
-                .addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2020/")
+                .addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/")
 //                .addUrl("https://github.com/code4craft")
                 //.addUrl("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/45/09/450981.html")
                 .addPipeline(govRegionSpiderPipeline)
