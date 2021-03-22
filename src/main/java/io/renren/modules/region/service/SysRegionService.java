@@ -18,5 +18,7 @@ public interface SysRegionService extends IService<SysRegionEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     void updateRegion();
+
+    void updateData();
 }
 

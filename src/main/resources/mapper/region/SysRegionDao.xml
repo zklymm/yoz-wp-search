@@ -3,5 +3,18 @@
 
 <mapper namespace="io.renren.modules.region.dao.SysRegionDao">
 
-
+    <select id="getOldRegion" resultType="map">
+        SELECT * from sys_region2
+        <where>
+            <if test="id != '' and id != null">
+                and id = #{id}
+            </if>
+            <if test="name != '' and name != null">
+                and name = #{name}
+            </if>
+            <if test="pid != '' and pid != null">
+                and pid = #{pid}
+            </if>
+        </where>
+    </select>
 </mapper>

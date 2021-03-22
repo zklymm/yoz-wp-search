@@ -4,6 +4,9 @@ import io.renren.modules.region.entity.SysRegionEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 行政区表
  * 
@@ -13,5 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysRegionDao extends BaseMapper<SysRegionEntity> {
-	
+	List<Map<String,Object>> getOldRegion (Map<String,Object> params);
 }
