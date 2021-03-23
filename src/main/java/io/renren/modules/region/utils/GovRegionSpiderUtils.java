@@ -56,9 +56,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setRegionName(provNameList.get(i));
                 entity.setRegionType(1);
                 entity.setProviceName(provNameList.get(i));
-                String[] itude = getItude(provNameList.get(i));
-                entity.setLongitude(itude[0]);
-                entity.setLatitude(itude[1]);
+//                String[] itude = getItude(provNameList.get(i));
+//                entity.setLongitude(itude[0]);
+//                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(cityNameList.size()>0 && cityCodeList.size()>0){
@@ -75,9 +75,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setProviceName(getName(proviceCode));
                 entity.setCityName(cityNameList.get(i));
                 entity.setParentPath(proviceCode);
-                String[] itude = getItude(getName(proviceCode)+cityNameList.get(i));
-                entity.setLongitude(itude[0]);
-                entity.setLatitude(itude[1]);
+//                String[] itude = getItude(getName(proviceCode)+cityNameList.get(i));
+//                entity.setLongitude(itude[0]);
+//                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(countyNameList.size()>0 && countyCodeList.size()>0){
@@ -96,9 +96,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setCityName(getName(cityCode));
                 entity.setCountyName(countyNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode);
-                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+countyNameList.get(i));
-                entity.setLongitude(itude[0]);
-                entity.setLatitude(itude[1]);
+//                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+countyNameList.get(i));
+//                entity.setLongitude(itude[0]);
+//                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(townNameList.size()>0 && townCodeList.size()>0){
@@ -119,9 +119,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setCountyName(getName(countyCode));
                 entity.setTownName(townNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode);
-                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+townNameList.get(i));
-                entity.setLongitude(itude[0]);
-                entity.setLatitude(itude[1]);
+//                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+townNameList.get(i));
+//                entity.setLongitude(itude[0]);
+//                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }else if(villageNameList.size()>0 && villageTypeList.size()>0 && villageCodeList.size()>0){
@@ -145,9 +145,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setTownName(getName(townCode));
                 entity.setVillageName(villageNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode+","+townCode);
-                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+getName(townCode)+villageNameList.get(i));
-                entity.setLongitude(itude[0]);
-                entity.setLatitude(itude[1]);
+//                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+getName(townCode)+villageNameList.get(i));
+//                entity.setLongitude(itude[0]);
+//                entity.setLatitude(itude[1]);
                 list.add(entity);
             }
         }
