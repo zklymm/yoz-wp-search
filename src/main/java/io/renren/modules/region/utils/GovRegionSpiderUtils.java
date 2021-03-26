@@ -10,6 +10,7 @@ import io.renren.modules.region.service.SysRegionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -21,9 +22,12 @@ import java.util.*;
 @Component
 public class GovRegionSpiderUtils implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
-    private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000).setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50");
+    private Site site = Site.me().setCharset("gbk").setRetryTimes(3).setTimeOut(10000).setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50");
     @Autowired
     private SysRegionService sysRegionService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     private String gaoUrl = "https://restapi.amap.com/v3/geocode/geo";
     private String gaoKey = "4138c1cea719cc344b6c876825079684";
@@ -45,6 +49,8 @@ public class GovRegionSpiderUtils implements PageProcessor {
         List<String> villageNameList = page.getHtml().xpath("//tr[@class='villagetr']/td[3]/text()").all();
         List<String> villageTypeList = page.getHtml().xpath("//tr[@class='villagetr']/td[2]/text()").all();
         List<String> villageCodeList = page.getHtml().xpath("//tr[@class='villagetr']/td[1]/text()").all();
+        Long preRegion = redisTemplate.opsForValue().increment("preRegion",provCodeList.size()+cityCodeList.size()+countyCodeList.size()+townCodeList.size()+villageCodeList.size());
+        System.out.println(preRegion);
         List<SysRegionEntity> list = new ArrayList<>();
         if(provNameList.size()>0 && provCodeList.size()>0){
             if(provNameList.size() != provCodeList.size()){
@@ -72,7 +78,7 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setRegionName(cityNameList.get(i));
                 entity.setParentCode(proviceCode);
                 entity.setRegionType(2);
-                entity.setProviceName(getName(proviceCode));
+//                entity.setProviceName(getName(proviceCode));
                 entity.setCityName(cityNameList.get(i));
                 entity.setParentPath(proviceCode);
 //                String[] itude = getItude(getName(proviceCode)+cityNameList.get(i));
@@ -92,8 +98,8 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setRegionName(countyNameList.get(i));
                 entity.setRegionType(3);
                 entity.setParentCode(cityCode);
-                entity.setProviceName(getName(proviceCode));
-                entity.setCityName(getName(cityCode));
+//                entity.setProviceName(getName(proviceCode));
+//                entity.setCityName(getName(cityCode));
                 entity.setCountyName(countyNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode);
 //                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+countyNameList.get(i));
@@ -114,9 +120,9 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setRegionName(townNameList.get(i));
                 entity.setRegionType(4);
                 entity.setParentCode(countyCode);
-                entity.setProviceName(getName(proviceCode));
-                entity.setCityName(getName(cityCode));
-                entity.setCountyName(getName(countyCode));
+//                entity.setProviceName(getName(proviceCode));
+//                entity.setCityName(getName(cityCode));
+//                entity.setCountyName(getName(countyCode));
                 entity.setTownName(townNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode);
 //                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+townNameList.get(i));
@@ -139,10 +145,10 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 entity.setCountyType(villageTypeList.get(i));
                 entity.setRegionType(5);
                 entity.setParentCode(townCode);
-                entity.setProviceName(getName(proviceCode));
-                entity.setCityName(getName(cityCode));
-                entity.setCountyName(getName(countyCode));
-                entity.setTownName(getName(townCode));
+//                entity.setProviceName(getName(proviceCode));
+//                entity.setCityName(getName(cityCode));
+//                entity.setCountyName(getName(countyCode));
+//                entity.setTownName(getName(townCode));
                 entity.setVillageName(villageNameList.get(i));
                 entity.setParentPath(proviceCode+","+cityCode+","+countyCode+","+townCode);
 //                String[] itude = getItude(getName(proviceCode)+getName(cityCode)+getName(countyCode)+getName(townCode)+villageNameList.get(i));
@@ -151,7 +157,6 @@ public class GovRegionSpiderUtils implements PageProcessor {
                 list.add(entity);
             }
         }
-        System.out.println(list);
 
 
         page.putField("list",list);
@@ -186,7 +191,7 @@ public class GovRegionSpiderUtils implements PageProcessor {
     @Override
     public Site getSite() {
 
-        return site.setCharset("gbk").setRetryTimes(3).setSleepTime(10000).setTimeOut(10000);
+        return site.setCharset("gbk").setRetryTimes(3).setTimeOut(10000);
     }
 
 //    public static void start() {

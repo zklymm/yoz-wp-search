@@ -24,10 +24,10 @@ spring:
       enabled: true
   redis:
     open: true  # 是否开启redis缓存  true开启   false关闭
-    database: 0
-    host: localhost
-    port: 6379
-    password:    # 密码（默认为空）
+    database: 8
+    host: 103.89.185.136
+    port: 46379
+    password: redis@123   # 密码（默认为空）
     timeout: 6000ms  # 连接超时时长（毫秒）
     jedis:
       pool:
@@ -74,7 +74,3 @@ renren:
     # token有效时长，7天，单位秒
     expire: 604800
     header: token
-
-logging:
-  level:
-    root: INFO
