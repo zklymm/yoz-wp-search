@@ -24,7 +24,7 @@ spring:
       enabled: true
   redis:
     open: true  # 是否开启redis缓存  true开启   false关闭
-    database: 8
+    database: 7
     host: 103.89.185.136
     port: 46379
     password: redis@123   # 密码（默认为空）

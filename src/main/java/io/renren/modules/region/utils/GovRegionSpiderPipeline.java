@@ -35,7 +35,6 @@ public class GovRegionSpiderPipeline implements Pipeline {
                 String s = JSONUtil.toJsonStr(sysRegionEntity);
                 redisTemplate.opsForList().rightPushAll("regionList",s);
                 Long region = redisTemplate.opsForValue().increment("region");
-                System.out.println(region);
 //                redisTemplate.opsForList().rightPush("regionList",sysRegionEntity);
                 QueryWrapper<SysRegionEntity> wrapper = new QueryWrapper<>();
                 wrapper.lambda().eq(SysRegionEntity::getRegionCode,sysRegionEntity.getRegionCode());

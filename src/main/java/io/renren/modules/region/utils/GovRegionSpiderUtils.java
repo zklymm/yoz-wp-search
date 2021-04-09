@@ -34,6 +34,8 @@ public class GovRegionSpiderUtils implements PageProcessor {
     @Override
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑
     public void process(Page page) {
+        try{
+
         // 部分二：定义如何抽取页面信息，并保存下来
 //        page.putField("author", page.getUrl().regex("https://github\\.com/(\\w+)/.*").toString());
         List<String> provNameList = page.getHtml().xpath("//tr[@class='provincetr']/td/a/text()").all();
@@ -50,7 +52,6 @@ public class GovRegionSpiderUtils implements PageProcessor {
         List<String> villageTypeList = page.getHtml().xpath("//tr[@class='villagetr']/td[2]/text()").all();
         List<String> villageCodeList = page.getHtml().xpath("//tr[@class='villagetr']/td[1]/text()").all();
         Long preRegion = redisTemplate.opsForValue().increment("preRegion",provCodeList.size()+cityCodeList.size()+countyCodeList.size()+townCodeList.size()+villageCodeList.size());
-        System.out.println(preRegion);
         List<SysRegionEntity> list = new ArrayList<>();
         if(provNameList.size()>0 && provCodeList.size()>0){
             if(provNameList.size() != provCodeList.size()){
@@ -162,6 +163,11 @@ public class GovRegionSpiderUtils implements PageProcessor {
         page.putField("list",list);
         // 部分三：从页面发现后续的url地址来抓取
         page.addTargetRequests(page.getHtml().xpath("//tr[@class='provincetr']/td/a/@href|//tr[@class='citytr']/td[1]/a/@href|//tr[@class='countytr']/td[1]/a/@href|//tr[@class='towntr']/td[1]/a/@href").all());
+
+        }catch (Exception e){
+            System.out.println(page.getUrl());
+            redisTemplate.opsForList().rightPushAll("errorUrl",page.getUrl());
+        }
     }
 
     private String getName(String regionCode){
